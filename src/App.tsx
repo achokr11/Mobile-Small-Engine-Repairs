@@ -18,7 +18,7 @@ import {
   Scissors
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // --- Components ---
 
@@ -204,10 +204,6 @@ const Hero = () => {
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={20} className="text-brand-green" />
                 <span className="font-medium">Same-Day Service</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={20} className="text-brand-green" />
-                <span className="font-medium">Certified Techs</span>
               </div>
             </div>
           </motion.div>
@@ -419,7 +415,7 @@ const WhyChooseUs = () => (
           <div className="space-y-4">
             <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=1000" className="rounded-2xl h-64 w-full object-cover" alt="Tool" referrerPolicy="no-referrer" />
             <div className="bg-brand-orange p-8 rounded-2xl text-white">
-              <p className="text-4xl font-black mb-2">15+</p>
+              <p className="text-4xl font-black mb-2">7+</p>
               <p className="font-bold uppercase text-sm tracking-widest">Years Experience</p>
             </div>
           </div>
@@ -475,7 +471,7 @@ const ServiceArea = () => (
         We provide mobile small engine repair services to homeowners and businesses throughout the greater metropolitan area and surrounding suburbs. 
       </p>
       <div className="flex flex-wrap justify-center gap-4">
-        {["Downtown", "North Suburbs", "West End", "South Valley", "East Heights"].map(area => (
+        {["Detroit", "Dearborn", "Dearborn Heights", "Garden City", "Livonia", "Canton", "Plymouth"].map(area => (
           <span key={area} className="px-6 py-2 bg-white/10 rounded-full font-medium border border-white/10">{area}</span>
         ))}
       </div>
@@ -483,82 +479,146 @@ const ServiceArea = () => (
   </section>
 );
 
-const ContactForm = () => (
-  <section id="contact" className="py-24 bg-gray-50">
-    <div className="container mx-auto px-4">
-      <div className="max-w-5xl mx-auto glass-card rounded-3xl overflow-hidden flex flex-col md:flex-row">
-        <div className="md:w-2/5 bg-brand-blue p-12 text-white">
-          <h3 className="text-3xl mb-6">Get a Free Quote</h3>
-          <p className="text-gray-400 mb-12">Tell us what's wrong and we'll give you an estimate and schedule a visit.</p>
-          
-          <div className="space-y-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-brand-orange">
-                <Phone size={24} />
+const ContactForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    equipment: 'Lawn Mower',
+    issue: ''
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const message = `New Quote Request:\nName: ${formData.name}\nPhone: ${formData.phone}\nEquipment: ${formData.equipment}\nIssue: ${formData.issue}`;
+    
+    // Trigger SMS
+    window.location.href = `sms:+13138508660?body=${encodeURIComponent(message)}`;
+    
+    // Show success state
+    setIsSubmitted(true);
+    setTimeout(() => setIsSubmitted(false), 5000);
+  };
+
+  return (
+    <section id="contact" className="py-24 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <div className="max-w-5xl mx-auto glass-card rounded-3xl overflow-hidden flex flex-col md:flex-row">
+          <div className="md:w-2/5 bg-brand-blue p-12 text-white">
+            <h3 className="text-3xl mb-6">Get a Free Quote</h3>
+            <p className="text-gray-400 mb-12">Tell us what's wrong and we'll give you an estimate and schedule a visit.</p>
+            
+            <div className="space-y-8">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-brand-orange">
+                  <Phone size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 uppercase font-bold tracking-widest">Call Us</p>
+                  <p className="text-xl font-bold">(313) 850-8660</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-400 uppercase font-bold tracking-widest">Call Us</p>
-                <p className="text-xl font-bold">(313) 850-8660</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-brand-orange">
-                <Clock size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400 uppercase font-bold tracking-widest">Hours</p>
-                <p className="text-xl font-bold">Mon-Sat: 8am - 6pm</p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-brand-orange">
+                  <Clock size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 uppercase font-bold tracking-widest">Hours</p>
+                  <p className="text-xl font-bold">Mon-Sat: 8am - 6pm</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div className="md:w-3/5 p-12 bg-white">
-          <form className="grid grid-cols-1 sm:grid-cols-2 gap-6" onSubmit={e => e.preventDefault()}>
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Name</label>
-              <input type="text" className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all" placeholder="John Doe" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Phone</label>
-              <input type="tel" className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all" placeholder="(313) 000-0000" />
-            </div>
-            <div className="sm:col-span-2 space-y-2">
-              <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Equipment Type</label>
-              <select className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all appearance-none">
-                <option>Lawn Mower</option>
-                <option>Snow Blower</option>
-                <option>Generator</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div className="sm:col-span-2 space-y-2">
-              <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Describe the Issue</label>
-              <textarea className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all h-32" placeholder="My mower won't start after sitting all winter..."></textarea>
-            </div>
-            <div className="sm:col-span-2">
-              <Button 
-                className="w-full py-5 text-xl"
-                onClick={() => {
-                  const form = document.querySelector('form');
-                  if (form) {
-                    const name = (form.querySelector('input[placeholder="John Doe"]') as HTMLInputElement)?.value;
-                    const equipment = (form.querySelector('select') as HTMLSelectElement)?.value;
-                    const issue = (form.querySelector('textarea') as HTMLTextAreaElement)?.value;
-                    const message = `Booking Request:\nName: ${name}\nEquipment: ${equipment}\nIssue: ${issue}`;
-                    window.location.href = `sms:+13138508660?body=${encodeURIComponent(message)}`;
-                  }
-                }}
-              >
-                Request Quote
-              </Button>
-            </div>
-          </form>
+          
+          <div className="md:w-3/5 p-12 bg-white">
+            <AnimatePresence mode="wait">
+              {!isSubmitted ? (
+                <motion.form 
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-6" 
+                  onSubmit={handleSubmit}
+                >
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Name</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={formData.name}
+                      onChange={e => setFormData({...formData, name: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all" 
+                      placeholder="John Doe" 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Phone</label>
+                    <input 
+                      type="tel" 
+                      required
+                      value={formData.phone}
+                      onChange={e => setFormData({...formData, phone: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all" 
+                      placeholder="(313) 000-0000" 
+                    />
+                  </div>
+                  <div className="sm:col-span-2 space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Equipment Type</label>
+                    <select 
+                      value={formData.equipment}
+                      onChange={e => setFormData({...formData, equipment: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all appearance-none"
+                    >
+                      <option>Lawn Mower</option>
+                      <option>Snow Blower</option>
+                      <option>Generator</option>
+                      <option>Power Washer</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2 space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Describe the Issue</label>
+                    <textarea 
+                      required
+                      value={formData.issue}
+                      onChange={e => setFormData({...formData, issue: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all h-32" 
+                      placeholder="My mower won't start after sitting all winter..."
+                    ></textarea>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Button type="submit" className="w-full py-5 text-xl">
+                      Request Quote via Text
+                    </Button>
+                  </div>
+                </motion.form>
+              ) : (
+                <motion.div 
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="h-full flex flex-col items-center justify-center text-center p-8"
+                >
+                  <div className="w-20 h-20 bg-brand-green/10 text-brand-green rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle2 size={48} />
+                  </div>
+                  <h3 className="text-3xl mb-4">Message Prepared!</h3>
+                  <p className="text-gray-600 text-lg mb-8">
+                    Your SMS app should have opened with the quote details. Please hit "Send" in your messaging app to complete the request.
+                  </p>
+                  <Button variant="outline" onClick={() => setIsSubmitted(false)}>
+                    Send Another Request
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const Footer = () => (
   <footer className="bg-brand-blue text-white pt-24 pb-12">
