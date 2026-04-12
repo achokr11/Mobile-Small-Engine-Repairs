@@ -42,7 +42,7 @@ export default async function handler(req: any, res: any) {
     
     await transporter.sendMail({
       from: `"Mobile Engine Pro" <${fromEmail}>`,
-      to: 'amir@claritylawfirm.com',
+      to: 'amirchokr857@gmail.com',
       subject: `🛠️ New Quote Request: ${equipment} from ${name}`,
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1a202c;">
