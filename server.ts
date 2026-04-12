@@ -1,5 +1,8 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
+
+console.log('>>> SERVER INITIALIZING <<<');
+
 import nodemailer from 'nodemailer';
 import path from 'path';
 import { fileURLToPath } from 'url';

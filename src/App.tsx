@@ -764,12 +764,20 @@ const Footer = () => (
 // --- Main App ---
 
 export default function App() {
+  const [apiStatus, setApiStatus] = useState<any>(null);
+
   useEffect(() => {
     // Verify API connectivity on startup
     fetch('api/health')
       .then(res => res.json())
-      .then(data => console.log('API Health Check:', data))
-      .catch(err => console.error('API Health Check Failed:', err));
+      .then(data => {
+        console.log('API Health Check:', data);
+        setApiStatus(data);
+      })
+      .catch(err => {
+        console.error('API Health Check Failed:', err);
+        setApiStatus({ error: err.message });
+      });
   }, []);
 
   return (
@@ -787,6 +795,11 @@ export default function App() {
         <ContactForm />
       </main>
       <Footer />
+      
+      {/* Debug API Status (Hidden in production usually, but helpful now) */}
+      <div className="fixed bottom-2 right-2 text-[10px] text-gray-500 bg-white/80 p-1 rounded border border-gray-200 z-50">
+        API: {apiStatus ? (apiStatus.error ? `Error: ${apiStatus.error}` : `OK (${apiStatus.serverId})`) : 'Checking...'}
+      </div>
       
       {/* Sticky Mobile CTA */}
       <div className="md:hidden fixed bottom-6 left-6 right-6 z-40">
