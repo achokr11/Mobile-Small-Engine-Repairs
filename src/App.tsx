@@ -521,7 +521,11 @@ const ContactForm = () => {
     setStatusMessage('Sending request to server...');
     setSubmitType('email');
     
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
+    
     try {
+      console.log('Fetching /api/send-email...');
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
@@ -529,18 +533,30 @@ const ContactForm = () => {
           'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
+        signal: controller.signal
       });
 
-      const data = await response.json();
+      clearTimeout(timeoutId);
+      console.log('Response received, status:', response.status);
+      
+      const data = await response.json().catch(() => ({ error: 'Invalid response from server' }));
 
       if (response.ok) {
         setStatusMessage('Success! Redirecting...');
         setIsSubmitted(true);
       } else {
-        setStatusMessage(`Error: ${data.error || 'Unknown error'}`);
+        const errorMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : (data.error || 'Unknown error');
+        setStatusMessage(`Error: ${errorMsg}`);
       }
-    } catch (error) {
-      setStatusMessage(`Network Error: ${error instanceof Error ? error.message : 'Failed to connect'}`);
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      console.error('Fetch error:', error);
+      if (error.name === 'AbortError') {
+        setStatusMessage('Error: Request timed out. The server is taking too long to respond.');
+      } else {
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        setStatusMessage(`Network Error: ${errorMsg}`);
+      }
     } finally {
       setIsSubmitting(false);
     }

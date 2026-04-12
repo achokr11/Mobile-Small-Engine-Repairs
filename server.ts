@@ -47,21 +47,27 @@ async function startServer() {
 
   // API Route for sending emails
   app.post('/api/send-email', async (req, res) => {
-    console.log('Received email request:', req.body);
+    // Set a 15-second timeout for this specific route
+    req.setTimeout(15000);
+    
+    console.log('--- New Email Request ---');
+    console.log('Body:', req.body);
     const { name, phone, equipment, issue } = req.body;
 
     if (!name || !phone || !equipment || !issue) {
-      console.warn('Missing required fields in request');
+      console.warn('Validation failed: Missing fields');
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     try {
-      console.log('Initializing SMTP transporter...');
+      console.log('1. Getting transporter...');
       const mailClient = getTransporter();
       const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
       
-      console.log(`Sending email from ${fromEmail} to amir@claritylawfirm.com...`);
-      await mailClient.sendMail({
+      console.log(`2. Attempting to send email from ${fromEmail}...`);
+      
+      // Use a promise with a timeout for the sendMail call itself
+      const sendMailPromise = mailClient.sendMail({
         from: `"Mobile Engine Pro" <${fromEmail}>`,
         to: 'amir@claritylawfirm.com',
         subject: `🛠️ New Quote Request: ${equipment} from ${name}`,
@@ -112,11 +118,31 @@ async function startServer() {
         `,
       });
 
-      console.log('Email sent successfully!');
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('SMTP Send Timeout')), 12000)
+      );
+
+      await Promise.race([sendMailPromise, timeoutPromise]);
+
+      console.log('3. Email sent successfully!');
       res.status(200).json({ success: true });
     } catch (err) {
-      console.error('SMTP Error details:', err);
-      res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to send email' });
+      console.error('--- SMTP Error ---');
+      console.error(err);
+      
+      let errorMessage = 'Failed to send email';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      } else if (err && typeof err === 'object') {
+        try {
+          errorMessage = JSON.stringify(err);
+        } catch (e) {
+          errorMessage = 'An unknown error occurred';
+        }
+      }
+      res.status(500).json({ error: errorMessage });
     }
   });
 
