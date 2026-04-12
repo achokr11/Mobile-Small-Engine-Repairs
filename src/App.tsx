@@ -519,8 +519,9 @@ const ContactForm = () => {
     const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
     
     try {
-      console.log('Fetching /api/send-email...');
-      const response = await fetch('/api/send-email', {
+      const apiUrl = '/api/send-email';
+      console.log(`Fetching ${apiUrl} (Full: ${window.location.origin}${apiUrl})...`);
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

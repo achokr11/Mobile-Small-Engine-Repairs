@@ -56,8 +56,14 @@ async function startServer() {
     res.json({ 
       status: 'ok', 
       environment: process.env.NODE_ENV,
+      isProd: process.env.NODE_ENV === 'production' || process.env.VITE_USER_NODE_ENV === 'production',
       time: new Date().toISOString()
     });
+  });
+
+  // Root ping for simple connectivity test
+  app.get('/ping', (req, res) => {
+    res.send('pong');
   });
 
   // API Route for sending emails
