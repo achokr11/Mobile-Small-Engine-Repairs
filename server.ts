@@ -45,6 +45,11 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Health check route
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', environment: process.env.NODE_ENV });
+  });
+
   // API Route for sending emails
   app.post('/api/send-email', async (req, res) => {
     // Set a 15-second timeout for this specific route

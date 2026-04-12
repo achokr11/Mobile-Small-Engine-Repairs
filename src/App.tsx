@@ -480,12 +480,6 @@ const ServiceArea = () => (
 );
 
 const ContactForm = () => {
-  console.log('ContactForm version 1.0.6 loading...');
-  
-  useEffect(() => {
-    console.log('ContactForm mounted');
-  }, []);
-
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
