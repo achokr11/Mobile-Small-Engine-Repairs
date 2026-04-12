@@ -424,7 +424,7 @@ const WhyChooseUs = () => (
               <p className="text-4xl font-black mb-2">100%</p>
               <p className="font-bold uppercase text-sm tracking-widest">Satisfaction</p>
             </div>
-            <img src="https://images.unsplash.com/photo-1530124560676-4fbc912f77c7?auto=format&fit=crop&q=80&w=1000" className="rounded-2xl h-64 w-full object-cover" alt="Engine" referrerPolicy="no-referrer" />
+            <img src="https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?auto=format&fit=crop&q=80&w=1000" className="rounded-2xl h-64 w-full object-cover" alt="Engine Repair" referrerPolicy="no-referrer" />
           </div>
         </div>
       </div>
@@ -480,6 +480,12 @@ const ServiceArea = () => (
 );
 
 const ContactForm = () => {
+  console.log('ContactForm version 1.0.6 loading...');
+  
+  useEffect(() => {
+    console.log('ContactForm mounted');
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -487,17 +493,57 @@ const ContactForm = () => {
     issue: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [submitType, setSubmitType] = useState<'sms' | 'email'>('sms');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSmsSubmit = (e: React.MouseEvent | React.FormEvent) => {
+    if (e) e.preventDefault();
+    console.log('SMS button clicked');
     const message = `New Quote Request:\nName: ${formData.name}\nPhone: ${formData.phone}\nEquipment: ${formData.equipment}\nIssue: ${formData.issue}`;
-    
-    // Trigger SMS
+    setSubmitType('sms');
     window.location.href = `sms:+13138508660?body=${encodeURIComponent(message)}`;
-    
-    // Show success state
     setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000);
+  };
+
+  const handleEmailSubmit = async (e: React.MouseEvent | React.FormEvent) => {
+    if (e) e.preventDefault();
+    
+    console.log('Email button clicked');
+    setStatusMessage('Checking fields...');
+    
+    if (!formData.name || !formData.phone || !formData.issue) {
+      setStatusMessage('Error: Please fill out all required fields.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatusMessage('Sending request to server...');
+    setSubmitType('email');
+    
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setStatusMessage('Success! Redirecting...');
+        setIsSubmitted(true);
+      } else {
+        setStatusMessage(`Error: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      setStatusMessage(`Network Error: ${error instanceof Error ? error.message : 'Failed to connect'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -539,7 +585,6 @@ const ContactForm = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="grid grid-cols-1 sm:grid-cols-2 gap-6" 
-                  onSubmit={handleSubmit}
                 >
                   <div className="space-y-2">
                     <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Name</label>
@@ -587,10 +632,30 @@ const ContactForm = () => {
                       placeholder="My mower won't start after sitting all winter..."
                     ></textarea>
                   </div>
-                  <div className="sm:col-span-2">
-                    <Button type="submit" className="w-full py-5 text-xl">
-                      Request Quote via Text
-                    </Button>
+                  <div className="sm:col-span-2 space-y-4">
+                    {statusMessage && (
+                      <div className={`p-4 rounded-xl text-sm font-bold ${statusMessage.startsWith('Error') ? 'bg-red-100 text-red-600' : 'bg-brand-blue/10 text-brand-blue'}`}>
+                        {statusMessage}
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <button 
+                        type="button" 
+                        onClick={handleSmsSubmit} 
+                        className="w-full py-5 text-lg bg-brand-orange hover:bg-[#e65c00] text-white shadow-lg shadow-brand-orange/20 rounded-lg font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
+                        disabled={isSubmitting}
+                      >
+                        Request via Text
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={handleEmailSubmit} 
+                        className="w-full py-5 text-lg bg-brand-blue hover:bg-slate-900 text-white rounded-lg font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? 'Sending...' : 'Request via Email'}
+                      </button>
+                    </div>
                   </div>
                 </motion.form>
               ) : (
@@ -603,9 +668,11 @@ const ContactForm = () => {
                   <div className="w-20 h-20 bg-brand-green/10 text-brand-green rounded-full flex items-center justify-center mb-6">
                     <CheckCircle2 size={48} />
                   </div>
-                  <h3 className="text-3xl mb-4">Message Prepared!</h3>
+                  <h3 className="text-3xl mb-4">{submitType === 'sms' ? 'Message Prepared!' : 'Request Sent!'}</h3>
                   <p className="text-gray-600 text-lg mb-8">
-                    Your SMS app should have opened with the quote details. Please hit "Send" in your messaging app to complete the request.
+                    {submitType === 'sms' 
+                      ? 'Your SMS app should have opened with the quote details. Please hit "Send" to complete the request.' 
+                      : 'Your request has been sent automatically to our team. We will contact you shortly.'}
                   </p>
                   <Button variant="outline" onClick={() => setIsSubmitted(false)}>
                     Send Another Request
