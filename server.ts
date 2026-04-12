@@ -86,7 +86,7 @@ async function startServer() {
     
     console.log('--- New Email Request ---');
     console.log('Body:', req.body);
-    const { name, phone, equipment, issue } = req.body;
+    const { name, phone, equipment, modelNumber, issue } = req.body;
 
     if (!name || !phone || !equipment || !issue) {
       console.warn('Validation failed: Missing fields');
@@ -132,6 +132,12 @@ async function startServer() {
                   <td style="padding: 12px 0; color: #64748b; font-weight: 600;">Equipment:</td>
                   <td style="padding: 12px 0; color: #0f172a; font-weight: 500;">${equipment}</td>
                 </tr>
+                ${modelNumber ? `
+                <tr>
+                  <td style="padding: 12px 0; color: #64748b; font-weight: 600;">Model Number:</td>
+                  <td style="padding: 12px 0; color: #0f172a; font-weight: 500;">${modelNumber}</td>
+                </tr>
+                ` : ''}
               </table>
 
               <div style="margin-top: 32px; background-color: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #ff6600;">

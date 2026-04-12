@@ -484,6 +484,7 @@ const ContactForm = () => {
     name: '',
     phone: '',
     equipment: 'Lawn Mower',
+    modelNumber: '',
     issue: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -494,7 +495,7 @@ const ContactForm = () => {
   const handleSmsSubmit = (e: React.MouseEvent | React.FormEvent) => {
     if (e) e.preventDefault();
     console.log('SMS button clicked');
-    const message = `New Quote Request:\nName: ${formData.name}\nPhone: ${formData.phone}\nEquipment: ${formData.equipment}\nIssue: ${formData.issue}`;
+    const message = `New Quote Request:\nName: ${formData.name}\nPhone: ${formData.phone}\nEquipment: ${formData.equipment}\nModel: ${formData.modelNumber}\nIssue: ${formData.issue}`;
     setSubmitType('sms');
     window.location.href = `sms:+13138508660?body=${encodeURIComponent(message)}`;
     setIsSubmitted(true);
@@ -633,6 +634,16 @@ const ContactForm = () => {
                       <option>Power Washer</option>
                       <option>Other</option>
                     </select>
+                  </div>
+                  <div className="sm:col-span-2 space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Model Number (Optional)</label>
+                    <input 
+                      type="text" 
+                      value={formData.modelNumber}
+                      onChange={e => setFormData({...formData, modelNumber: e.target.value})}
+                      className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none transition-all" 
+                      placeholder="e.g. John Deere S100 or Honda HRX217" 
+                    />
                   </div>
                   <div className="sm:col-span-2 space-y-2">
                     <label className="text-sm font-bold uppercase tracking-wider text-gray-500">Describe the Issue</label>
