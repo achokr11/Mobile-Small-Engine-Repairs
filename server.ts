@@ -42,12 +42,16 @@ function getTransporter() {
 async function startServer() {
   const app = express();
   const PORT = 3000;
+  const SERVER_ID = Math.random().toString(36).substring(7);
+
+  console.log(`[${SERVER_ID}] Server starting...`);
+  console.log(`[${SERVER_ID}] NODE_ENV:`, process.env.NODE_ENV);
 
   app.use(express.json());
 
   // Log all requests for debugging
   app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    console.log(`[${SERVER_ID}] ${new Date().toISOString()} - ${req.method} ${req.url}`);
     next();
   });
 
@@ -55,15 +59,21 @@ async function startServer() {
   app.get('/api/health', (req, res) => {
     res.json({ 
       status: 'ok', 
+      serverId: SERVER_ID,
       environment: process.env.NODE_ENV,
-      isProd: process.env.NODE_ENV === 'production' || process.env.VITE_USER_NODE_ENV === 'production',
+      isProd: process.env.NODE_ENV === 'production' || process.env.VITE_USER_NODE_ENV === 'production' || !!process.env.K_SERVICE,
       time: new Date().toISOString()
     });
   });
 
+  // Simple test route
+  app.get('/api/test', (req, res) => {
+    res.json({ message: 'API is working', serverId: SERVER_ID });
+  });
+
   // Root ping for simple connectivity test
   app.get('/ping', (req, res) => {
-    res.send('pong');
+    res.send(`pong - ${SERVER_ID}`);
   });
 
   // API Route for sending emails
@@ -173,18 +183,21 @@ async function startServer() {
   });
 
   // Vite middleware for development
-  const isProd = process.env.NODE_ENV === 'production' || process.env.VITE_USER_NODE_ENV === 'production';
+  const isProd = process.env.NODE_ENV === 'production' || 
+                 process.env.VITE_USER_NODE_ENV === 'production' || 
+                 !!process.env.K_SERVICE; // K_SERVICE is set in Cloud Run
   
   if (!isProd) {
-    console.log('Starting in DEVELOPMENT mode...');
+    console.log(`[${SERVER_ID}] Starting in DEVELOPMENT mode...`);
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
   } else {
-    console.log('Starting in PRODUCTION mode...');
+    console.log(`[${SERVER_ID}] Starting in PRODUCTION mode...`);
     const distPath = path.join(process.cwd(), 'dist');
+    console.log(`[${SERVER_ID}] Serving static files from: ${distPath}`);
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
@@ -192,7 +205,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    console.log(`[${SERVER_ID}] Server listening on http://0.0.0.0:${PORT}`);
   });
 }
 

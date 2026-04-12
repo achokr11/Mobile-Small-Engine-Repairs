@@ -519,8 +519,9 @@ const ContactForm = () => {
     const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
     
     try {
-      const apiUrl = '/api/send-email';
-      console.log(`Fetching ${apiUrl} (Full: ${window.location.origin}${apiUrl})...`);
+      // Use a relative path to ensure it works on both preview and live sites
+      const apiUrl = 'api/send-email';
+      console.log(`Fetching ${apiUrl}...`);
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -763,6 +764,14 @@ const Footer = () => (
 // --- Main App ---
 
 export default function App() {
+  useEffect(() => {
+    // Verify API connectivity on startup
+    fetch('api/health')
+      .then(res => res.json())
+      .then(data => console.log('API Health Check:', data))
+      .catch(err => console.error('API Health Check Failed:', err));
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Header />
