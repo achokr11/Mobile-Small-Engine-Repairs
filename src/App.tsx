@@ -809,7 +809,7 @@ export default function App() {
       
       {/* Debug API Status (Hidden in production usually, but helpful now) */}
       <div className="fixed bottom-2 right-2 text-[10px] text-gray-500 bg-white/80 p-1 rounded border border-gray-200 z-50">
-        API: {apiStatus ? (apiStatus.error ? `Error: ${apiStatus.error}` : `OK (${apiStatus.serverId})`) : 'Checking...'}
+        API: {apiStatus ? (apiStatus.error ? `Error: ${apiStatus.error}` : `Connected ${apiStatus.serverId ? `(${apiStatus.serverId})` : ''}`) : 'Connecting...'}
       </div>
       
       {/* Sticky Mobile CTA */}

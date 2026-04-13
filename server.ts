@@ -5,6 +5,7 @@ console.log('>>> SERVER INITIALIZING <<<');
 
 import nodemailer from 'nodemailer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
@@ -192,20 +193,22 @@ async function startServer() {
   });
 
   // Vite middleware for development
-  const isProd = process.env.NODE_ENV === 'production' || 
+  const distPath = path.join(process.cwd(), 'dist');
+  const distExists = fs.existsSync(path.join(distPath, 'index.html'));
+  
+  const isProd = (process.env.NODE_ENV === 'production' || 
                  process.env.VITE_USER_NODE_ENV === 'production' || 
-                 !!process.env.K_SERVICE; // K_SERVICE is set in Cloud Run
+                 !!process.env.K_SERVICE) && distExists;
   
   if (!isProd) {
-    console.log(`[${SERVER_ID}] Starting in DEVELOPMENT mode...`);
+    console.log(`[${SERVER_ID}] Starting in DEVELOPMENT mode (Vite Middleware)...`);
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
   } else {
-    console.log(`[${SERVER_ID}] Starting in PRODUCTION mode...`);
-    const distPath = path.join(process.cwd(), 'dist');
+    console.log(`[${SERVER_ID}] Starting in PRODUCTION mode (Static Files)...`);
     console.log(`[${SERVER_ID}] Serving static files from: ${distPath}`);
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
