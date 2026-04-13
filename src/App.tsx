@@ -807,11 +807,6 @@ export default function App() {
       </main>
       <Footer />
       
-      {/* Debug API Status (Hidden in production usually, but helpful now) */}
-      <div className="fixed bottom-2 right-2 text-[10px] text-gray-500 bg-white/80 p-1 rounded border border-gray-200 z-50">
-        API: {apiStatus ? (apiStatus.error ? `Error: ${apiStatus.error}` : `Connected ${apiStatus.serverId ? `(${apiStatus.serverId})` : ''}`) : 'Connecting...'}
-      </div>
-      
       {/* Sticky Mobile CTA */}
       <div className="md:hidden fixed bottom-6 left-6 right-6 z-40">
         <Button 
