@@ -172,14 +172,14 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="inline-block bg-brand-orange/20 text-brand-orange px-4 py-1 rounded-full font-bold text-sm mb-6 uppercase tracking-widest border border-brand-orange/30">
-              On-Site Repair Specialists
+              Wayne County's #1 Mobile Repair
             </span>
             <h1 className="text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-[0.9]">
               WE COME TO YOU.<br />
               <span className="text-brand-orange">WE FIX IT FAST.</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-xl leading-relaxed">
-              Professional on-site small engine repair for lawn mowers, snow blowers, generators & more. No hauling, no hassle.
+              Professional on-site small engine repair for lawn mowers, snow blowers, generators & more across <span className="text-white font-bold">Wayne County</span>. No hauling, no hassle.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -272,7 +272,7 @@ const Services = () => {
       <div className="container mx-auto px-4">
         <SectionHeading 
           title="What We Repair" 
-          subtitle="We specialize in all major brands and types of small engine equipment. If it has a small engine, we can fix it at your doorstep."
+          subtitle="We specialize in all major brands and types of small engine equipment. If it has a small engine, we can fix it at your doorstep anywhere in Wayne County."
         />
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -464,14 +464,14 @@ const ServiceArea = () => (
     <div className="container mx-auto px-4 text-center">
       <div className="inline-flex items-center gap-2 text-brand-orange font-bold uppercase tracking-widest mb-6">
         <MapPin size={20} />
-        Local & Reliable
+        Wayne County & Surrounding Areas
       </div>
-      <h2 className="text-4xl md:text-6xl mb-8">Serving Your Local Area</h2>
+      <h2 className="text-4xl md:text-6xl mb-8">Serving Your Local Community</h2>
       <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
-        We provide mobile small engine repair services to homeowners and businesses throughout the greater metropolitan area and surrounding suburbs. 
+        We provide professional mobile small engine repair services to homeowners and businesses throughout <span className="text-white font-bold">Wayne County</span>, including the following cities:
       </p>
       <div className="flex flex-wrap justify-center gap-4">
-        {["Detroit", "Dearborn", "Dearborn Heights", "Garden City", "Livonia", "Canton", "Plymouth"].map(area => (
+        {["Detroit", "Dearborn", "Dearborn Heights", "Garden City", "Livonia", "Canton", "Plymouth", "Westland", "Redford", "Wayne"].map(area => (
           <span key={area} className="px-6 py-2 bg-white/10 rounded-full font-medium border border-white/10">{area}</span>
         ))}
       </div>
